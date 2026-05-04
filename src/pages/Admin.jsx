@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { LogOut, Plus, Image as ImageIcon, Trash2, LayoutDashboard, Users, CalendarDays, FileText } from 'lucide-react';
+import { LogOut, Plus, Image as ImageIcon, Trash2, LayoutDashboard, Users, Calendar, FileText } from 'lucide-react';
 import UserTab from '../components/UserTab';
 import EventTab from '../components/EventTab';
 import { API_URL } from '../utils/api';
