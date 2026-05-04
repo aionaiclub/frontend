@@ -136,7 +136,7 @@ const Admin = () => {
               onClick={() => setActiveTab('events')}
               className={`flex items-center px-4 py-2 rounded-md transition-colors ${activeTab === 'events' ? 'bg-white text-black' : 'bg-brand-accent text-white hover:bg-white/10'}`}
             >
-              <CalendarDays size={18} className="mr-2" /> Events
+              <Calendar size={18} className="mr-2" /> Events
             </button>
             {userInfo.role === 'superadmin' && (
               <button 
