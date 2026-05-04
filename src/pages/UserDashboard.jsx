@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Calendar, CheckCircle, FileText, Download, ExternalLink, Play } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
