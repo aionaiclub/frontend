@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../utils/api';
+import { API_URL, getImageUrl } from '../utils/api';
 
 const Hero = () => {
   const [slides, setSlides] = useState([]);
@@ -17,25 +17,25 @@ const Hero = () => {
           axios.get(`${API_URL}/api/events`)
         ]);
         
-        const latestPosts = postsRes.data.slice(0, 2).map(p => ({
+        const latestPosts = postsRes.data.slice(0, 3).map(p => ({
           id: p._id,
           type: 'news',
           title: p.title,
           subtitle: (p.description?.substring(0, 100) || '') + '...',
-          image: p.image ? `${API_URL}${p.image}` : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80',
+          image: p.image ? getImageUrl(p.image) : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80',
           link: `/news/${p._id}`
         }));
 
-        const latestEvents = eventsRes.data.slice(0, 1).map(e => ({
+        const latestEvents = eventsRes.data.slice(0, 2).map(e => ({
           id: e._id,
           type: 'event',
           title: 'Upcoming Event: ' + e.title,
           subtitle: (e.description?.substring(0, 100) || '') + '...',
-          image: e.images?.[0] ? `${API_URL}${e.images[0]}` : 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80',
+          image: e.images?.[0] ? getImageUrl(e.images[0]) : 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80',
           link: '/login'
         }));
 
-        const combined = [...latestPosts, ...latestEvents];
+        const combined = [...latestPosts, ...latestEvents].slice(0, 5);
         if (combined.length === 0) {
            setSlides([
             {

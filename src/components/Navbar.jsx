@@ -25,6 +25,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
+              <img src="/logo.jpg" alt="AIONAI Logo" className="h-12 w-auto mr-2 rounded-full border border-white/20" />
               <span className="text-2xl font-bold tracking-tighter text-white">
                 AION<span className="text-gray-400">AI</span>
               </span>

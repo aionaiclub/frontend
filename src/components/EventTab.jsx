@@ -15,6 +15,8 @@ const EventTab = ({ userInfo }) => {
   const [customFields, setCustomFields] = useState([]);
   const [newFieldLabel, setNewFieldLabel] = useState('');
   const [newFieldType, setNewFieldType] = useState('text');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [status, setStatus] = useState('Upcoming');
   
   const [slides, setSlides] = useState([]);
   const [documents, setDocuments] = useState([]);
@@ -116,7 +118,9 @@ const EventTab = ({ userInfo }) => {
         date, 
         customFormFields: customFields,
         images: slideUrls,
-        documents: docUrls
+        documents: docUrls,
+        youtubeUrl,
+        status
       };
 
       if (editingEvent) {
@@ -138,7 +142,7 @@ const EventTab = ({ userInfo }) => {
   };
 
   const resetForm = () => {
-    setTitle(''); setDescription(''); setDate(''); setCustomFields([]); setSlides([]); setDocuments([]); setEditingEvent(null);
+    setTitle(''); setDescription(''); setDate(''); setCustomFields([]); setSlides([]); setDocuments([]); setYoutubeUrl(''); setStatus('Upcoming'); setEditingEvent(null);
   };
 
   const editHandler = (event) => {
@@ -148,6 +152,8 @@ const EventTab = ({ userInfo }) => {
     setDate(event.date.split('T')[0]);
     setCustomFields(event.customFormFields || []);
     setSlides(event.images || []);
+    setYoutubeUrl(event.youtubeUrl || '');
+    setStatus(event.status || 'Upcoming');
   };
 
   const deleteHandler = async (id) => {
@@ -172,7 +178,14 @@ const EventTab = ({ userInfo }) => {
         <form onSubmit={submitEvent} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <input required type="text" placeholder="Event Title" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-3 py-2 bg-brand-dark border border-gray-600 rounded-md text-white" />
-            <input required type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full px-3 py-2 bg-brand-dark border border-gray-600 rounded-md text-white" />
+            <div className="grid grid-cols-2 gap-4">
+              <input required type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full px-3 py-2 bg-brand-dark border border-gray-600 rounded-md text-white" />
+              <select value={status} onChange={e => setStatus(e.target.value)} className="w-full px-3 py-2 bg-brand-dark border border-gray-600 rounded-md text-white">
+                <option value="Upcoming">Upcoming</option>
+                <option value="Conducted">Conducted</option>
+              </select>
+            </div>
+            <input type="text" placeholder="YouTube URL (Optional)" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} className="w-full px-3 py-2 bg-brand-dark border border-gray-600 rounded-md text-white" />
             <textarea required rows={4} placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 bg-brand-dark border border-gray-600 rounded-md text-white" />
             
             <div className="grid grid-cols-1 gap-4">
@@ -240,48 +253,71 @@ const EventTab = ({ userInfo }) => {
         <div className="bg-brand-accent p-6 rounded-xl border border-white/10">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center"><Calendar className="mr-2 text-blue-500"/> Events List</h2>
           <div className="space-y-4">
-            {events.map(event => (
-              <div key={event._id} className={`p-4 bg-brand-dark rounded-md border flex justify-between items-center transition-all ${selectedEventId === event._id ? 'border-blue-500' : 'border-gray-700 hover:border-gray-500'}`} onClick={() => fetchRegistrations(event._id)}>
-                <div className="cursor-pointer">
-                  <h3 className="text-white font-bold">{event.title}</h3>
-                  <p className="text-xs text-gray-400">{new Date(event.date).toLocaleDateString()}</p>
+            {events.map(event => {
+              const eventDate = new Date(event.date);
+              const isToday = new Date().toDateString() === eventDate.toDateString();
+              const isPast = new Date() > eventDate && !isToday;
+              const displayStatus = event.status === 'Conducted' || isPast ? 'Conducted' : (isToday ? 'Live Now' : 'Upcoming');
+              
+              return (
+                <div key={event._id} className={`p-4 bg-brand-dark rounded-md border flex justify-between items-center transition-all ${selectedEventId === event._id ? 'border-blue-500' : 'border-gray-700 hover:border-gray-500'} ${isToday ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-brand-dark' : ''}`} onClick={() => fetchRegistrations(event._id)}>
+                  <div className="cursor-pointer">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-white font-bold">{event.title}</h3>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${displayStatus === 'Live Now' ? 'bg-red-600 text-white animate-pulse' : (displayStatus === 'Conducted' ? 'bg-gray-600 text-gray-300' : 'bg-blue-600 text-white')}`}>
+                        {displayStatus}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400">{eventDate.toLocaleDateString()}</p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/live-admin/${event._id}`); }} className="bg-green-600/20 text-green-400 p-2 rounded hover:bg-green-600 hover:text-white transition-all">
+                      <Play size={16} />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); editHandler(event); }} className="bg-blue-600/20 text-blue-400 p-2 rounded hover:bg-blue-600 hover:text-white transition-all">
+                      <Edit size={16} />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); deleteHandler(event._id); }} className="bg-red-600/20 text-red-400 p-2 rounded hover:bg-red-600 hover:text-white transition-all">
+                      <Trash size={16} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  <button onClick={(e) => { e.stopPropagation(); navigate(`/live-admin/${event._id}`); }} className="bg-green-600/20 text-green-400 p-2 rounded hover:bg-green-600 hover:text-white transition-all">
-                    <Play size={16} />
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); editHandler(event); }} className="bg-blue-600/20 text-blue-400 p-2 rounded hover:bg-blue-600 hover:text-white transition-all">
-                    <Edit size={16} />
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); deleteHandler(event._id); }} className="bg-red-600/20 text-red-400 p-2 rounded hover:bg-red-600 hover:text-white transition-all">
-                    <Trash size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         {selectedEventId && registrations.length > 0 && (
           <div className="bg-brand-accent p-6 rounded-xl border border-white/10 h-fit">
             <div className="flex justify-between items-center mb-6">
-               <h2 className="text-xl font-bold text-white">Registrations ({registrations.length})</h2>
-               <CSVLink data={csvData} filename="registrations.csv" className="text-xs bg-gray-700 text-white px-2 py-1 rounded">Export</CSVLink>
+              <h2 className="text-xl font-bold text-white">Registrations ({registrations.length})</h2>
+              <CSVLink 
+                data={registrations.map(reg => ({
+                  Name: reg.user?.name || 'N/A',
+                  Email: reg.user?.email || 'N/A',
+                  ...reg.customAnswers,
+                  Date: new Date(reg.createdAt).toLocaleString()
+                }))} 
+                filename="registrations.csv" 
+                className="text-xs bg-gray-700 text-white px-2 py-1 rounded"
+              >
+                Export
+              </CSVLink>
             </div>
-             <div className="h-40 w-full mb-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={registrations.reduce((acc, curr) => {
-                    const date = new Date(curr.createdAt).toLocaleDateString();
-                    const existing = acc.find(a => a.name === date);
-                    if (existing) existing.count++;
-                    else acc.push({ name: date, count: 1 });
-                    return acc;
-                  }, [])}>
-                    <XAxis dataKey="name" stroke="#9ca3af" fontSize={10} />
-                    <YAxis stroke="#9ca3af" fontSize={10} />
-                    <Bar dataKey="count" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="h-40 w-full mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={registrations.reduce((acc, curr) => {
+                  const date = new Date(curr.createdAt).toLocaleDateString();
+                  const existing = acc.find(a => a.name === date);
+                  if (existing) existing.count++;
+                  else acc.push({ name: date, count: 1 });
+                  return acc;
+                }, [])}>
+                  <XAxis dataKey="name" stroke="#9ca3af" fontSize={10} />
+                  <YAxis stroke="#9ca3af" fontSize={10} />
+                  <Bar dataKey="count" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         )}
       </div>

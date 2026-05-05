@@ -8,6 +8,9 @@ import UserDashboard from './pages/UserDashboard';
 import LiveEventAdmin from './pages/LiveEventAdmin';
 import LiveEventUser from './pages/LiveEventUser';
 import NewsDetail from './pages/NewsDetail';
+import ViewAllNews from './pages/ViewAllNews';
+import ViewAllEvents from './pages/ViewAllEvents';
+import ViewAllAchievements from './pages/ViewAllAchievements';
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
             <Route path="/live-admin/:id" element={<LiveEventAdmin />} />
             <Route path="/live/:id" element={<LiveEventUser />} />
             <Route path="/news/:id" element={<NewsDetail />} />
+            <Route path="/all-news" element={<ViewAllNews />} />
+            <Route path="/all-events" element={<ViewAllEvents />} />
+            <Route path="/all-achievements" element={<ViewAllAchievements />} />
           </Routes>
         </main>
         <Footer />

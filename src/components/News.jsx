@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { API_URL } from '../utils/api';
+import { API_URL, getImageUrl } from '../utils/api';
 
 const News = () => {
   const [news, setNews] = useState([]);
@@ -49,7 +49,7 @@ const News = () => {
               No recent news published yet.
             </div>
           ) : (
-            news.map((item, index) => (
+            news.slice(0, 3).map((item, index) => (
               <motion.div
                 key={item._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -64,7 +64,7 @@ const News = () => {
                   {item.image && (
                     <div className="h-56 w-full overflow-hidden relative">
                       <img 
-                        src={`${API_URL}${item.image}`} 
+                        src={getImageUrl(item.image)} 
                         alt={item.title} 
                         className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                       />
@@ -91,6 +91,14 @@ const News = () => {
             ))
           )}
         </div>
+        
+        {news.length > 3 && (
+          <div className="text-center mt-12">
+            <Link to="/all-news" className="inline-flex items-center px-8 py-3 bg-white/10 text-white rounded-full font-bold hover:bg-white hover:text-black transition-all border border-white/20 group">
+              View All News <ArrowRight size={18} className="ml-2 group-hover:translate-x-2 transition-transform" />
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

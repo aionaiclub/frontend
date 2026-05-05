@@ -39,7 +39,7 @@ const About = () => {
             Innovation of Neural Intelligence
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-400 lg:mx-auto">
-            We are a student-driven AI/ML club focused on peer teaching, collaboration, and building real-world projects. Join us to learn, innovate, and shape the future.
+            Aiml club at svyasa
           </p>
         </motion.div>
 

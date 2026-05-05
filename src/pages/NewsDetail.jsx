@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, FileText, Download, User } from 'lucide-react';
-import { API_URL } from '../utils/api';
+import { API_URL, getImageUrl } from '../utils/api';
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -42,7 +42,7 @@ const NewsDetail = () => {
           {news.image && (
             <div className="w-full h-96 overflow-hidden">
               <img 
-                src={`${API_URL}${news.image}`} 
+                src={getImageUrl(news.image)} 
                 alt={news.title} 
                 className="w-full h-full object-cover"
               />
@@ -61,6 +61,20 @@ const NewsDetail = () => {
               {news.description}
             </div>
 
+            {news.youtubeUrl && (
+              <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl border border-white/10 aspect-video">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src={news.youtubeUrl.includes('watch?v=') ? news.youtubeUrl.replace('watch?v=', 'embed/') : news.youtubeUrl} 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+            )}
+
             {news.documents && news.documents.length > 0 && (
               <div className="border-t border-white/10 pt-8 mt-8">
                 <h3 className="text-xl font-bold text-white mb-4">Attachments</h3>
@@ -68,7 +82,7 @@ const NewsDetail = () => {
                   {news.documents.map((doc, i) => (
                     <a 
                       key={i} 
-                      href={`${API_URL}${doc.url}`} 
+                      href={getImageUrl(doc.url)} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center justify-between p-4 bg-brand-dark rounded-2xl border border-white/5 hover:border-blue-500/50 transition-all group"

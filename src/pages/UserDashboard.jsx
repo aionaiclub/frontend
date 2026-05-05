@@ -108,6 +108,20 @@ const UserDashboard = () => {
             <h2 className="text-2xl font-bold text-white mb-4">Register: {selectedEvent.title}</h2>
             <p className="text-gray-400 mb-6">{selectedEvent.description}</p>
             
+            {selectedEvent.youtubeUrl && (
+              <div className="mb-8 rounded-2xl overflow-hidden shadow-2xl border border-white/10 aspect-video">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src={selectedEvent.youtubeUrl.includes('watch?v=') ? selectedEvent.youtubeUrl.replace('watch?v=', 'embed/') : selectedEvent.youtubeUrl} 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+            )}
+            
             <form onSubmit={handleRegister} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
